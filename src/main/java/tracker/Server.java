@@ -43,19 +43,19 @@ public class Server implements Closeable {
   private void listen() {
     log.info("Start listening clients on {}:{}", socket.getInetAddress(), socket.getLocalPort());
 
-    while (true) {
+    while (!Thread.interrupted()) {
       try {
         pool.submit(handle(socket.accept()));
       } catch (IOException err) {
-        if (!socket.isClosed()) {
-          log.error("Error while accepting socket", err);
-        }
+        log.error("Error while accepting socket", err);
       }
     }
   }
 
   private Runnable handle(Socket client) {
     return () -> {
+      log.debug("Connected        ", client.getInetAddress(), client.getPort());
+
       try (Socket socket = client;
            DataInputStream in = new DataInputStream(socket.getInputStream());
            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -65,6 +65,8 @@ public class Server implements Closeable {
       } catch (IOException | InvocationTargetException | IllegalAccessException err) {
         log.error("Error while handling client {}", client, err);
       }
+
+      log.debug("Ok               {}:{}", client.getInetAddress(), client.getPort());
     };
   }
 

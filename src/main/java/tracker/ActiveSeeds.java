@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Collections.synchronizedSet;
+import static tracker.Server.log;
 
 @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
 class ActiveSeeds {

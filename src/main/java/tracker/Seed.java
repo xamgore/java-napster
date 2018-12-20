@@ -6,6 +6,8 @@ import java.net.InetAddress;
 import java.time.Instant;
 import java.util.Objects;
 
+import static tracker.Server.log;
+
 public class Seed {
   final InetAddress ip;
   final short port;
@@ -19,7 +21,7 @@ public class Seed {
 
   public boolean wasActiveLast(int numOfMinutes) {
     final int secondsPerMinute = 60;
-    return (lastActive - now()) / secondsPerMinute < numOfMinutes;
+    return (now() - lastActive) / secondsPerMinute < numOfMinutes;
   }
 
   @Override public boolean equals(Object o) {

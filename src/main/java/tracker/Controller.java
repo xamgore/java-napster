@@ -10,6 +10,7 @@ import java.util.List;
 import static java.lang.Math.max;
 import static tracker.Server.log;
 
+@SuppressWarnings("unused")
 public class Controller {
   private static final int LAST_FIVE_MINUTES = 5;
 
@@ -28,7 +29,7 @@ public class Controller {
     for (Method m : methods) {
       RouteId annotation = m.getAnnotation(RouteId.class);
       if (annotation == null || annotation.value() != requestIdx) continue;
-      log.info("Called /{} route", m.getName());
+      log.info("/{} route", m.getName());
       return (ip, in, out) -> m.invoke(this, ip, in, out);
     }
 
@@ -86,10 +87,12 @@ public class Controller {
       int fileId = in.readInt();
       activeSeeds.addIfPrepared(fileId, seed);
     }
+
+    out.writeBoolean(true);  // make client happy
   }
 
   // default route
   private void none(InetAddress clientIp, DataInputStream in, DataOutputStream out) {
-    log.info("Called /none route");
+    log.info("/none route");
   }
 }

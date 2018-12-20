@@ -30,7 +30,7 @@ public class Journal {
 
     this.path = path;
     this.journal = new ConcurrentLinkedQueue<>(loadRecordsFromFile(path));
-    this.lastFileId = new AtomicInteger(journal.size());
+    this.lastFileId = new AtomicInteger(journal.parallelStream().mapToInt(f -> f.id).max().orElse(-1));
   }
 
 
@@ -43,10 +43,10 @@ public class Journal {
   }
 
   public int add(long size, String name) throws IOException {
-    Record info = new Record(lastFileId.getAndIncrement(), max(0, size), name);
+    Record info = new Record(lastFileId.incrementAndGet(), max(0, size), name);
 
     // simultaneous file-writes are prevented
-    synchronized (path) { writeStringToFile(path.toFile(), info.serialize(), true); }
+    synchronized (path) { writeStringToFile(path.toFile(), info.serialize() + "\n", true); }
 
     journal.add(info);
     return info.id;
